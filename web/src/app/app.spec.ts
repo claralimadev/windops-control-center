@@ -1,24 +1,56 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { App } from './app';
 
-describe('App', () => {
+function textOf(fixture: { nativeElement: HTMLElement }): string {
+  return (fixture.nativeElement.textContent ?? '') as string;
+}
+
+describe('App — indicador de saúde da API', () => {
+  let httpMock: HttpTestingController;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-    })
-      .compileComponents();
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should create the app', () => {
+  afterEach(() => httpMock.verify());
+
+  it('começa em "Verificando" enquanto o GET /health está em voo', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    fixture.detectChanges();
+    expect(textOf(fixture)).toContain('Verificando');
+    httpMock
+      .expectOne('http://localhost:3000/health')
+      .flush({ status: 'ok' });
   });
 
-  it('should render title', async () => {
+  it('mostra "Online" quando a API responde ok', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, web');
+    fixture.detectChanges();
+    const req = httpMock.expectOne('http://localhost:3000/health');
+    expect(req.request.method).toBe('GET');
+    req.flush({ status: 'ok' });
+    fixture.detectChanges();
+
+    expect(textOf(fixture)).toContain('Online');
+    expect(textOf(fixture)).not.toContain('Indisponível');
+  });
+
+  it('mostra "Indisponível" quando a API falha (erro não é vazio)', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const req = httpMock.expectOne('http://localhost:3000/health');
+    req.flush('erro', { status: 500, statusText: 'Server Error' });
+    fixture.detectChanges();
+
+    expect(textOf(fixture)).toContain('Indisponível');
   });
 });

@@ -3,7 +3,7 @@
 ## Projeto
 
 - Nome: WindOps Control Center
-- Fase: 0 — Auditoria da base (concluída 16/09/2026)
+- Fase: 4 — integração /health concluída (16/09/2026) → próxima: Fase 5/6 — assets
 - Nível do aluno: A — Iniciante em integração fullstack (fez Desafio 3 completo)
 - Estrutura repo: Opção B — backend `windops-api` fica onde está; workspace fullstack novo `windops-control-center` (ADR-001). Workspace novo contém o pacote de mentoria + futura pasta `web/`
 - Tutor: OpenCode / Antigravity
@@ -22,14 +22,14 @@
 - diretório: `web/` em `/home/usuario/IdeaProjects/windops-control-center`
 - porta: 4200 (padrão ng serve)
 - build: `ng build` ok ✅
-- testes: `ng test` (Vitest, 2 specs de fábrica) ✅
-- Fase: 3 concluída (scaffold Angular 22 validado) → próxima: Fase 4 (integração /health) 
-- Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web)
+- testes: `ng test` (Vitest, 3 specs passando — checking/online/offline do health) ✅
+- Fase: 4 concluída (CORS escopado + WindOpsApiService com getHealth + indicador API Online/Indisponível) → próxima: Fase 5/6 (assets)
+- Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web); para o Angular 22 reatividade por Signals (sem zone.js); URL base `http://localhost:3000` centralizada em `WindOpsApiService`
 
 ## Decisões
 
 - Layout: Opção A — Dashboard operacional (Fase 2, WIREFRAMES.md) — topo: status da API; faixa de KPIs; duas colunas (ativos + alertas recentes). Detalhe do ativo segue o "Detalhe sugerido" do WIREFRAMES.md
-- CORS vs proxy: pendente (Fase 4 — explicar antes de optar)
+- CORS vs proxy: **definido** — CORS escopado no backend (ADR-002)
 - Base URL: pendente (Fase 4)
 - Reatividade: pendente (Fase 5 — HttpClient/RxJS, Signals se simplificar)
 - Agregação KPIs: pendente (Fase 8 — `/dashboard/overview` NÃO existe no backend)
@@ -48,14 +48,15 @@
 - Reversibilidade: alta (é só reorganizar pastas, nenhum código muda)
 - Status: decidido em 16/09/2026
 
-### ADR-002 — CORS vs proxy (pendente — Fase 4)
-- Problema: —
-- Opções: —
-- Recomendação: —
-- Escolha: —
-- Motivo: —
-- Trade-off: —
-- Reversibilidade: —
+### ADR-002 — CORS vs proxy
+- Problema: Angular (origin `http://localhost:4200`) precisa ler respostas do NestJS (origin `http://localhost:3000`); browser bloqueia por padrão
+- Opções: A) `enableCors` escopado no backend; B) proxy de desenvolvimento no Angular
+- Recomendação: A
+- Escolha: A — `app.enableCors({ origin: ['http://localhost:4200'] })` no `main.ts`
+- Motivo: aprendizado real do mecanismo de origem/CORS (objetivo da Fase 4); é o comportamento de produção; evita camada que esconde o conceito; `*` rejeitado
+- Trade-off: toca o backend (2 linhas, reversível); origins precisarão de manutenção se a porta/painel mudar
+- Reversibilidade: alta (remover 2 linhas)
+- Status: decidido 16/09/2026; validado por curl (Allow-Origin + preflight OPTIONS 204)
 
 ## Divergências auditoria Fase 0 (contrato x backend real)
 
@@ -71,6 +72,14 @@ Obs.: `averagePowerMw` pode vir com precisão de ponto flutuante (ex.: 2.8000000
 Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert? }`). Registrada; decisão se adaptar backend ou aceitar contrato novo fica na Fase 9 (formulário de telemetria).
 
 ## Evidências
+
+### Frontend (Fase 4 — saúde da API)
+- getHealth p/ `GET /health` via `WindOpsApiService` ✅
+- CORS escopado `Origin: http://localhost:4200` validado com curl (Allow-Origin + preflight OPTIONS 204) ✅
+- ng build ✅ | ng test 3 specs ✅
+- Browser: indicador Online (verde) → API derrubada por kill no processo → Indisponível (vermelho) → API religada → Online ✅
+- Network: GET /health 200 (e 304 em reload com cache válido — esperado) ✅
+- Observado na prática: PID muda a cada start; identificado com `ss -tlnp` e encerrado com `kill`
 
 ### Backend (Fase 0 — via curl em 16/09/2026)
 - health: GET /health → 200 `{"status":"ok"}` ✅
@@ -100,8 +109,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 1 — Arquitetura fullstack: decidir estrutura de repositório, colocar o pacote de mentoria no local final, ADR inicial.
+Fase 5/6 — tipar Asset no frontend, `getAssets()` no WindOpsApiService, listar ativos com estados loading/success/empty/error e rotas mínimas.
 
 ## Último checkpoint
 
-Fase 0 concluída com evidência real em todos os endpoints do contrato. 5 divergências registradas. Pendente: resposta do aluno ao checkpoint ("qual endpoint usar como primeiro teste de integração — recomendado /health").
+Fase 4 concluída e provada no browser: ciclo Online → Indisponível → Online sem esconder erro. Evidências registradas. Pendente: commit da fatia de health e decisão Fase 8 (agregação KPIs).
