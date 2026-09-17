@@ -209,6 +209,13 @@ Feedback dado e correções aplicadas (404 ≠ vazio; sem banco/Prisma; `/dashbo
 refetch ao recriar o componente). Pontos a reforçar: regra de temperatura (75/85) e
 "vazio = 200 com []".
 
+## Entrega (16/09/2026)
+
+- Backend: https://github.com/claralimadev/windops-api
+- Frontend/fullstack: https://github.com/claralimadev/windops-control-center
+- Ambos públicos, branch padrão `main`.
+- Como subir os dois, Swagger e testes: `README.md` na raiz do control-center.
+
 ## Bugs conhecidos
 
 - Nenhum. Dados em memória: reiniciar o servidor zera telemetria/alertas (esperado no Desafio 3).
