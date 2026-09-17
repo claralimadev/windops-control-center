@@ -5,6 +5,7 @@ import type { Health } from './health';
 import type { Asset } from './asset';
 import type { Telemetry } from './telemetry';
 import type { AssetSummary } from './asset-summary';
+import type { DashboardOverview } from './dashboard-overview';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -34,5 +35,9 @@ export class WindOpsApiService {
     return this.http.get<AssetSummary>(
       `${API_BASE_URL}/assets/${encodeURIComponent(id)}/summary`,
     );
+  }
+
+  getDashboardOverview(): Observable<DashboardOverview> {
+    return this.http.get<DashboardOverview>(`${API_BASE_URL}/dashboard/overview`);
   }
 }

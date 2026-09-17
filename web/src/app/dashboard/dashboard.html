@@ -1,0 +1,51 @@
+<section class="dashboard">
+  <h2>Painel operacional</h2>
+
+  @if (state(); as s) {
+    @if (s.status === 'loading') {
+      <p class="state" role="status" aria-live="polite">
+        Carregando indicadores…
+      </p>
+    }
+
+    @if (s.status === 'error') {
+      <div class="state error" role="alert">
+        <p>{{ s.message }}</p>
+        <button type="button" (click)="load()">Tentar novamente</button>
+      </div>
+    }
+
+    @if (s.status === 'success') {
+      <ul class="kpi-band" aria-label="Indicadores da operação">
+        <li class="kpi">
+          <span class="kpi__value">{{ s.overview.totalAssets }}</span>
+          <span class="kpi__label">Ativos</span>
+        </li>
+        <li class="kpi kpi--online">
+          <span class="kpi__value">{{ s.overview.onlineAssets }}</span>
+          <span class="kpi__label">Operando</span>
+        </li>
+        <li class="kpi kpi--attention">
+          <span class="kpi__value">{{ s.overview.attentionAssets }}</span>
+          <span class="kpi__label">Em atenção</span>
+        </li>
+        <li class="kpi kpi--maintenance">
+          <span class="kpi__value">{{ s.overview.maintenanceAssets }}</span>
+          <span class="kpi__label">Em manutenção</span>
+        </li>
+        <li class="kpi kpi--critical">
+          <span class="kpi__value">{{ s.overview.criticalAlerts }}</span>
+          <span class="kpi__label">Alertas críticos</span>
+        </li>
+        <li class="kpi">
+          <span class="kpi__value">{{ s.overview.totalAlerts }}</span>
+          <span class="kpi__label">Alertas totais</span>
+        </li>
+      </ul>
+
+      <p class="links">
+        <a routerLink="/assets">Ver ativos</a>
+      </p>
+    }
+  }
+</section>

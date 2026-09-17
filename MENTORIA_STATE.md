@@ -3,7 +3,7 @@
 ## Projeto
 
 - Nome: WindOps Control Center
-- Fase: 4 — integração /health concluída (16/09/2026) → próxima: Fase 5/6 — assets
+- Fase: 8 — painel/KPIs via backend agregado (16/09/2026) → próxima: Fase 9 (formulário de telemetria) e Fase 10 (alertas)
 - Nível do aluno: A — Iniciante em integração fullstack (fez Desafio 3 completo)
 - Estrutura repo: Opção B — backend `windops-api` fica onde está; workspace fullstack novo `windops-control-center` (ADR-001). Workspace novo contém o pacote de mentoria + futura pasta `web/`
 - Tutor: OpenCode / Antigravity
@@ -22,19 +22,19 @@
 - diretório: `web/` em `/home/usuario/IdeaProjects/windops-control-center`
 - porta: 4200 (padrão ng serve)
 - build: `ng build` ok ✅
-- testes: `ng test` (Vitest, 3 specs passando — checking/online/offline do health) ✅
-- Fase: 4 concluída (CORS escopado + WindOpsApiService com getHealth + indicador API Online/Indisponível) → próxima: Fase 5/6 (assets)
+- testes: `ng test` (Vitest, 10 testes passando) ✅
+- Fase: 8 concluída (home/painel + KPIs via `/dashboard/overview`) → próxima: Fase 9 (formulário de telemetria)
 - Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web); para o Angular 22 reatividade por Signals (sem zone.js); URL base `http://localhost:3000` centralizada em `WindOpsApiService`
 
 ## Decisões
 
 - Layout: Opção A — Dashboard operacional (Fase 2, WIREFRAMES.md) — topo: status da API; faixa de KPIs; duas colunas (ativos + alertas recentes). Detalhe do ativo segue o "Detalhe sugerido" do WIREFRAMES.md
 - CORS vs proxy: **definido** — CORS escopado no backend (ADR-002)
-- Base URL: pendente (Fase 4)
-- Reatividade: pendente (Fase 5 — HttpClient/RxJS, Signals se simplificar)
-- Agregação KPIs: pendente (Fase 8 — `/dashboard/overview` NÃO existe no backend)
+- Base URL: definido — `http://localhost:3000` centralizada em `WindOpsApiService`
+- Reatividade: definido — HttpClient/RxJS para rede + Signals para estado local/derivado
+- Agregação KPIs: **definido** — Opção B: backend entrega `/dashboard/overview` (ADR-003)
 - Estratégia refresh após POST: pendente (Fase 9)
-- Estrutura de tipos: pendente
+- Estrutura de tipos: em andamento — um arquivo por contrato em `web/src/app/api/`
 
 ## ADRs
 
@@ -58,6 +58,16 @@
 - Reversibilidade: alta (remover 2 linhas)
 - Status: decidido 16/09/2026; validado por curl (Allow-Origin + preflight OPTIONS 204)
 
+### ADR-003 — Onde agregar os KPIs do dashboard
+- Problema: KPIs (total/online/atenção/críticos) podem ser calculados no front (A) ou entregues por um endpoint agregado no backend (B)
+- Opções: A) front chama `/assets` + `/alerts` e deriva; B) backend entrega `GET /dashboard/overview`
+- Recomendação: B
+- Escolha: B — `DashboardModule` (importa `AssetsModule`, usa `AssetsService` + `TelemetryService`)
+- Motivo: KPI é regra de negócio agregada; fonte única de verdade; 1 request; reutilizável por qualquer cliente; front magro
+- Trade-off: cria endpoint novo no repo do backend; mais um contrato para manter; decisão do aluno ("decide você") — critério, alternativa descartada e reversibilidade registrados
+- Reversibilidade: alta (remover endpoint e voltar a calcular no front)
+- Status: decidido 16/09/2026; backend validado por curl (KPI mudou 0→1/0→2 após gerar alertas)
+
 ## Divergências auditoria Fase 0 (contrato x backend real)
 
 | # | Ponto | API_CONTRACT.md | Backend real | Severidade |
@@ -65,7 +75,7 @@
 | 1 | POST /assets/:id/telemetry — shape da resposta | `{ telemetry, classification, alertCreated }` | `{ telemetry, alert? }` (alert ausente quando NORMAL) | 🔴 Alta |
 | 2 | Summary sem amostras | apenas números | `averagePowerMw: null`, `maxTemperatureC: null` | 🟠 Média |
 | 3 | windSpeedMs no body | presente no exemplo | `@IsOptional` (opcional) | 🟡 Baixa |
-| 4 | GET /dashboard/overview | opcional | não existe | 🟡 Baixa (decisão Fase 8) |
+| 4 | GET /dashboard/overview | opcional | não existia | ✅ resolvido — implementado (ADR-003) |
 | 5 | CORS | — | não habilitado no main.ts | 🟠 Média (Fase 4) |
 
 Obs.: `averagePowerMw` pode vir com precisão de ponto flutuante (ex.: 2.8000000000000003) — formatar na UI.
@@ -88,6 +98,29 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - browser: 3 cartões (WT-001 Operando, WT-002 Manutenção, PV-001 Operando) com tipo/local/potência ✅
 - Network: GET /assets 200 ✅
 - testes: 6 passando (health 3 + assets 3) ✅
+
+### Frontend (Fase 7 — detalhe do ativo)
+- rota `/assets/:id` com leitura de param via `route.paramMap` (suporta troca de ativo sem recriar componente) ✅
+- fluxo Opção B: `getAsset` primeiro (404 → "Ativo não encontrado") → `forkJoin(summary, telemetry)` em paralelo ✅
+- tipos com `number | null` (averagePowerMw/maxTemperatureC) e tratamento "—" ✅
+- browser: detalhe WT-001 (amostras 0, null → "—", telemetria vazia) ✅; `/assets/XYZ` → "Ativo não encontrado" ✅
+- Network: /assets/WT-001 → 200; /summary + /telemetry em paralelo → 200 ✅
+- cards da lista agora são `<a routerLink>` (acessíveis) ✅
+- testes: 8 passando ✅
+
+### Frontend (Fase 8 — painel de KPIs)
+- decisão ADR-003: Opção B — backend entrega `/dashboard/overview`; KPI é regra de negócio agregada (fonte única de verdade) ✅
+- `getDashboardOverview()` no único service; tipo `DashboardOverview` ✅
+- home `''` → componente `Dashboard` (1 request, faixa de 6 KPIs, loading/error com retry) ✅
+- browser: home mostra "Painel operacional" com `3 · 2 · 0 · 1 · 1 · 2` ✅
+- Network: `GET /dashboard/overview → 200` na home ✅
+- bug corrigido: `RouterLinkActive` não estava importado no `App` (o `routerLinkActive="active"` era ignorado silenciosamente) ✅
+- testes: 10 passando ✅
+
+### Backend (Fase 8 — endpoint agregado, 16/09/2026)
+- GET /dashboard/overview → 200 `{totalAssets:3, onlineAssets:2, attentionAssets:0, maintenanceAssets:1, criticalAlerts:0, totalAlerts:0}` (estado limpo) ✅
+- após POST WARNING (WT-001, 80) + POST CRITICAL (PV-001, 90): criticalAlerts 0→1, totalAlerts 0→2 ✅ (KPI calculado de verdade)
+- rota mapeada no boot: `Mapped {/dashboard/overview, GET}` ✅
 
 ### Backend (Fase 0 — via curl em 16/09/2026)
 - health: GET /health → 200 `{"status":"ok"}` ✅
@@ -117,8 +150,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 7 — detalhe do ativo (`/assets/:id`) com asset + summary + telemetria; decidir paralelo/sequencial e falha parcial. Fase 8 — decisão de agregação dos KPIs.
+Fase 9 — formulário de telemetria (`POST /assets/:id/telemetry`) + decidir divergência #1 do shape de resposta; Fase 10 — página de alertas.
 
 ## Último checkpoint
 
-Fase 6 concluída: lista de ativos real renderizada no browser, GET /assets 200, 6 testes passando. Sem bugs abertos.
+Fase 8 concluída: endpoint agregado validado por curl (KPI reage a alertas) e home com faixa de KPIs; 10 testes passando. Pendente: validar home no browser, commit (backend + frontend) e Fase 9.

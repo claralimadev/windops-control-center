@@ -1,6 +1,12 @@
 <header class="topbar">
   <h1>WindOps Control Center</h1>
   <nav class="main-nav" aria-label="Navegação principal">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Painel</a
+    >
     <a routerLink="/assets" routerLinkActive="active">Ativos</a>
   </nav>
   <button
