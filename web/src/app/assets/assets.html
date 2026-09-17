@@ -19,28 +19,30 @@
       } @else {
         <ul class="asset-list">
           @for (asset of s.assets; track asset.id) {
-            <li class="asset-card">
-              <header class="asset-card__head">
-                <span class="asset-id">{{ asset.id }}</span>
-                <span class="badge status-{{ asset.status }}">
-                  {{ statusLabel[asset.status] }}
-                </span>
-              </header>
-              <p class="asset-name">{{ asset.name }}</p>
-              <dl class="asset-meta">
-                <div>
-                  <dt>Tipo</dt>
-                  <dd>{{ typeLabel[asset.type] }}</dd>
-                </div>
-                <div>
-                  <dt>Local</dt>
-                  <dd>{{ asset.location }}</dd>
-                </div>
-                <div>
-                  <dt>Potência nominal</dt>
-                  <dd>{{ asset.ratedPowerMw }} MW</dd>
-                </div>
-              </dl>
+            <li>
+              <a class="asset-card" [routerLink]="['/assets', asset.id]">
+                <header class="asset-card__head">
+                  <span class="asset-id">{{ asset.id }}</span>
+                  <span class="badge status-{{ asset.status }}">
+                    {{ statusLabel[asset.status] }}
+                  </span>
+                </header>
+                <p class="asset-name">{{ asset.name }}</p>
+                <dl class="asset-meta">
+                  <div>
+                    <dt>Tipo</dt>
+                    <dd>{{ typeLabel[asset.type] }}</dd>
+                  </div>
+                  <div>
+                    <dt>Local</dt>
+                    <dd>{{ asset.location }}</dd>
+                  </div>
+                  <div>
+                    <dt>Potência nominal</dt>
+                    <dd>{{ asset.ratedPowerMw }} MW</dd>
+                  </div>
+                </dl>
+              </a>
             </li>
           }
         </ul>

@@ -1,0 +1,135 @@
+<section class="detail">
+  <a routerLink="/assets" class="back">← Voltar para ativos</a>
+
+  @if (assetState(); as s) {
+    @if (s.status === 'loading') {
+      <p class="state" role="status" aria-live="polite">Carregando ativo…</p>
+    }
+
+    @if (s.status === 'notfound') {
+      <div class="state error" role="alert">
+        <p>Ativo não encontrado.</p>
+      </div>
+    }
+
+    @if (s.status === 'error') {
+      <div class="state error" role="alert">
+        <p>Não foi possível carregar o ativo.</p>
+        <button type="button" (click)="loadAsset()">Tentar novamente</button>
+      </div>
+    }
+
+    @if (s.status === 'success') {
+      <header class="detail-head">
+        <h2>{{ s.asset.id }} — {{ s.asset.name }}</h2>
+        <span class="badge status-{{ s.asset.status }}">
+          {{ statusLabel[s.asset.status] }}
+        </span>
+      </header>
+
+      <dl class="asset-meta">
+        <div>
+          <dt>Tipo</dt>
+          <dd>{{ typeLabel[s.asset.type] }}</dd>
+        </div>
+        <div>
+          <dt>Local</dt>
+          <dd>{{ s.asset.location }}</dd>
+        </div>
+        <div>
+          <dt>Potência nominal</dt>
+          <dd>{{ s.asset.ratedPowerMw }} MW</dd>
+        </div>
+      </dl>
+
+      @if (extrasState(); as e) {
+        @if (e.status === 'idle' || e.status === 'loading') {
+          <p class="state" role="status" aria-live="polite">
+            Carregando dados do ativo…
+          </p>
+        }
+
+        @if (e.status === 'error') {
+          <div class="state error" role="alert">
+            <p>Não foi possível carregar o resumo e a telemetria.</p>
+            <button type="button" (click)="loadExtras()">Tentar novamente</button>
+          </div>
+        }
+
+        @if (e.status === 'success') {
+          <section class="summary" aria-labelledby="summary-title">
+            <h3 id="summary-title">Resumo</h3>
+            <dl class="summary-grid">
+              <div>
+                <dt>Amostras</dt>
+                <dd>{{ e.summary.samples }}</dd>
+              </div>
+              <div>
+                <dt>Potência média</dt>
+                <dd>
+                  @if (e.summary.averagePowerMw === null) {
+                    —
+                  } @else {
+                    {{ e.summary.averagePowerMw | number: '1.2-2' }} MW
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>Temp. máxima</dt>
+                <dd>
+                  @if (e.summary.maxTemperatureC === null) {
+                    —
+                  } @else {
+                    {{ e.summary.maxTemperatureC }} °C
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>Alertas atenção</dt>
+                <dd>{{ e.summary.warningAlerts }}</dd>
+              </div>
+              <div>
+                <dt>Alertas críticos</dt>
+                <dd>{{ e.summary.criticalAlerts }}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="telemetry" aria-labelledby="telemetry-title">
+            <h3 id="telemetry-title">Telemetria registrada</h3>
+            @if (e.telemetry.length === 0) {
+              <p class="state empty">Nenhuma leitura registrada ainda.</p>
+            } @else {
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Horário</th>
+                    <th scope="col">Potência</th>
+                    <th scope="col">Vento</th>
+                    <th scope="col">Temperatura</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (t of e.telemetry; track t.timestamp) {
+                    <tr>
+                      <td>{{ t.timestamp | date: 'short' }}</td>
+                      <td>{{ t.powerMw | number: '1.2-2' }} MW</td>
+                      <td>
+                        @if (t.windSpeedMs === undefined) {
+                          —
+                        } @else {
+                          {{ t.windSpeedMs | number: '1.1-1' }} m/s
+                        }
+                      </td>
+                      <td>{{ t.temperatureC }} °C</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </section>
+        }
+      }
+    }
+  }
+</section>

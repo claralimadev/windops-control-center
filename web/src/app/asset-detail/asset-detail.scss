@@ -1,0 +1,110 @@
+.detail {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.back {
+  color: #1d4ed8;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.back:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.detail-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.state {
+  padding: 0.75rem 0;
+}
+
+.state.error {
+  color: #b91c1c;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+  border: 1px solid currentColor;
+}
+
+.badge.status-ONLINE {
+  color: #15803d;
+}
+
+.badge.status-ATTENTION {
+  color: #b45309;
+}
+
+.badge.status-MAINTENANCE {
+  color: #1d4ed8;
+}
+
+.badge.status-OFFLINE {
+  color: #b91c1c;
+}
+
+.asset-meta,
+.summary-grid {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.asset-meta > div,
+.summary-grid > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0.2rem 0;
+}
+
+.asset-meta dt,
+.summary-grid dt {
+  color: #7b8794;
+  font-size: 0.85rem;
+}
+
+.asset-meta dd,
+.summary-grid dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+h3 {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  color: #52606d;
+  font-weight: 600;
+}

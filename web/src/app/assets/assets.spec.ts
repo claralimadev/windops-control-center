@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import {
   HttpTestingController,
   provideHttpClientTesting,
@@ -26,7 +27,11 @@ describe('Assets', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Assets],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
     httpMock = TestBed.inject(HttpTestingController);
   });

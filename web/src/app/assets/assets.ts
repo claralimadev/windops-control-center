@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { WindOpsApiService } from '../api/windops-api.service';
 import { ASSET_STATUS_LABEL, ASSET_TYPE_LABEL } from '../api/asset';
 import type { Asset } from '../api/asset';
@@ -10,6 +11,7 @@ type AssetsState =
 
 @Component({
   selector: 'app-assets',
+  imports: [RouterLink],
   templateUrl: './assets.html',
   styleUrl: './assets.scss',
 })
