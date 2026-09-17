@@ -168,6 +168,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - 400 (payload inválido) → "Dados inválidos" ✅
 - indisponibilidade → mensagens de erro com retry (home/lista/alertas); erro ≠ vazio ✅
 - front bloqueia payload inválido (`min(0)`) antes de sair request ✅
+- browser (API derrubada, pid morto): home → "Não foi possível carregar os indicadores." + retry; lista → "Não foi possível carregar os ativos." (NÃO "nenhum ativo"); detalhe → "Não foi possível carregar o ativo." (NÃO "não encontrado"); Network `ERR_CONNECTION_REFUSED` ✅
+- retry após religar a API recupera a tela (Online + KPIs) ✅
 
 ### Fase 13 — Responsividade e acessibilidade
 - headings, `label for`, links vs buttons, foco visível, `role=alert/status`, `aria-live` ✅
