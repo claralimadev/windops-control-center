@@ -3,7 +3,7 @@
 ## Projeto
 
 - Nome: WindOps Control Center
-- Fase: 8 — painel/KPIs via backend agregado (16/09/2026) → próxima: Fase 9 (formulário de telemetria) e Fase 10 (alertas)
+- Fase: 9 — formulário de telemetria + refetch (16/09/2026) → próxima: Fase 10 (alertas)
 - Nível do aluno: A — Iniciante em integração fullstack (fez Desafio 3 completo)
 - Estrutura repo: Opção B — backend `windops-api` fica onde está; workspace fullstack novo `windops-control-center` (ADR-001). Workspace novo contém o pacote de mentoria + futura pasta `web/`
 - Tutor: OpenCode / Antigravity
@@ -22,8 +22,8 @@
 - diretório: `web/` em `/home/usuario/IdeaProjects/windops-control-center`
 - porta: 4200 (padrão ng serve)
 - build: `ng build` ok ✅
-- testes: `ng test` (Vitest, 10 testes passando) ✅
-- Fase: 8 concluída (home/painel + KPIs via `/dashboard/overview`) → próxima: Fase 9 (formulário de telemetria)
+- testes: `ng test` (Vitest, 12 testes passando) ✅
+- Fase: 9 concluída (formulário de telemetria + refetch) → próxima: Fase 10 (alertas)
 - Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web); para o Angular 22 reatividade por Signals (sem zone.js); URL base `http://localhost:3000` centralizada em `WindOpsApiService`
 
 ## Decisões
@@ -33,7 +33,7 @@
 - Base URL: definido — `http://localhost:3000` centralizada em `WindOpsApiService`
 - Reatividade: definido — HttpClient/RxJS para rede + Signals para estado local/derivado
 - Agregação KPIs: **definido** — Opção B: backend entrega `/dashboard/overview` (ADR-003)
-- Estratégia refresh após POST: pendente (Fase 9)
+- Estratégia refresh após POST: **definido** — refetch de summary + telemetria (backend como fonte da verdade)
 - Estrutura de tipos: em andamento — um arquivo por contrato em `web/src/app/api/`
 
 ## ADRs
@@ -72,7 +72,7 @@
 
 | # | Ponto | API_CONTRACT.md | Backend real | Severidade |
 |---|-------|-----------------|--------------|------------|
-| 1 | POST /assets/:id/telemetry — shape da resposta | `{ telemetry, classification, alertCreated }` | `{ telemetry, alert? }` (alert ausente quando NORMAL) | 🔴 Alta |
+| 1 | POST /assets/:id/telemetry — shape da resposta | `{ telemetry, classification, alertCreated }` | `{ telemetry, alert? }` (alert ausente quando NORMAL) | ✅ resolvido — front adapta-se ao backend real (Fase 9) |
 | 2 | Summary sem amostras | apenas números | `averagePowerMw: null`, `maxTemperatureC: null` | 🟠 Média |
 | 3 | windSpeedMs no body | presente no exemplo | `@IsOptional` (opcional) | 🟡 Baixa |
 | 4 | GET /dashboard/overview | opcional | não existia | ✅ resolvido — implementado (ADR-003) |
@@ -117,6 +117,16 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - bug corrigido: `RouterLinkActive` não estava importado no `App` (o `routerLinkActive="active"` era ignorado silenciosamente) ✅
 - testes: 10 passando ✅
 
+### Frontend (Fase 9 — formulário de telemetria)
+- decisão: front adapta-se ao shape real do backend `{ telemetry, alert? }` (não alterar backend estável) — divergência #1 ✅
+- decisão: pós-sucesso faz **refetch** de summary + telemetria (backend é a verdade) ✅
+- Reactive Forms (`powerMw`, `windSpeedMs` opcional, `temperatureC`, `timestamp` datetime-local) ✅
+- estados `idle/submitting/success/error` distinguindo 400 (validação), 404 (não encontrado) e rede ✅
+- browser: `temperatureC=90` → verde "Alerta Crítico: Temperatura em nível crítico", Resumo atualiza ✅
+- Network: POST /telemetry 201 → GET /summary + GET /telemetry 200 (refetch) ✅
+- validação de front barra `powerMw=-1` antes de sair request (min(0)) ✅
+- testes: 12 passando ✅
+
 ### Backend (Fase 8 — endpoint agregado, 16/09/2026)
 - GET /dashboard/overview → 200 `{totalAssets:3, onlineAssets:2, attentionAssets:0, maintenanceAssets:1, criticalAlerts:0, totalAlerts:0}` (estado limpo) ✅
 - após POST WARNING (WT-001, 80) + POST CRITICAL (PV-001, 90): criticalAlerts 0→1, totalAlerts 0→2 ✅ (KPI calculado de verdade)
@@ -150,8 +160,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 9 — formulário de telemetria (`POST /assets/:id/telemetry`) + decidir divergência #1 do shape de resposta; Fase 10 — página de alertas.
+Fase 10 — página de alertas (`GET /alerts`): lista com severidade textual, ativo, mensagem, timestamp; coluna de alertas no dashboard.
 
 ## Último checkpoint
 
-Fase 8 concluída: endpoint agregado validado por curl (KPI reage a alertas) e home com faixa de KPIs; 10 testes passando. Pendente: validar home no browser, commit (backend + frontend) e Fase 9.
+Fase 9 concluída e validada no browser (POST 201 → alerta CRITICAL → refetch 200). 12 testes passando. Pendente: commit da Fase 9 e Fase 10.

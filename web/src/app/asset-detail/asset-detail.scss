@@ -108,3 +108,72 @@ th {
   color: #52606d;
   font-weight: 600;
 }
+
+.new-reading {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.new-reading form {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 22rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  color: #52606d;
+}
+
+.field input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.4rem;
+  font: inherit;
+}
+
+.field input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.field-error {
+  color: #b91c1c;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.new-reading button[type='submit'] {
+  justify-self: start;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.new-reading button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.form-feedback {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.form-feedback.success {
+  color: #15803d;
+}
+
+.form-feedback.error {
+  color: #b91c1c;
+}

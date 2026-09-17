@@ -6,6 +6,8 @@ import type { Asset } from './asset';
 import type { Telemetry } from './telemetry';
 import type { AssetSummary } from './asset-summary';
 import type { DashboardOverview } from './dashboard-overview';
+import type { CreateTelemetryPayload } from './telemetry-create';
+import type { TelemetryCreated } from './telemetry-created';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -39,5 +41,15 @@ export class WindOpsApiService {
 
   getDashboardOverview(): Observable<DashboardOverview> {
     return this.http.get<DashboardOverview>(`${API_BASE_URL}/dashboard/overview`);
+  }
+
+  createTelemetry(
+    id: string,
+    payload: CreateTelemetryPayload,
+  ): Observable<TelemetryCreated> {
+    return this.http.post<TelemetryCreated>(
+      `${API_BASE_URL}/assets/${encodeURIComponent(id)}/telemetry`,
+      payload,
+    );
   }
 }
