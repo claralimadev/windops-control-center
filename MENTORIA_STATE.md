@@ -3,7 +3,7 @@
 ## Projeto
 
 - Nome: WindOps Control Center
-- Fase: 10 — página de alertas concluída (16/09/2026) → próxima: fechamento (fases 11–16)
+- Fase: 16 — **DESAFIO 04 CONCLUÍDO** (fases 0–16) em 16/09/2026
 - Nível do aluno: A — Iniciante em integração fullstack (fez Desafio 3 completo)
 - Estrutura repo: Opção B — backend `windops-api` fica onde está; workspace fullstack novo `windops-control-center` (ADR-001). Workspace novo contém o pacote de mentoria + futura pasta `web/`
 - Tutor: OpenCode / Antigravity
@@ -23,7 +23,7 @@
 - porta: 4200 (padrão ng serve)
 - build: `ng build` ok ✅
 - testes: `ng test` (Vitest, 15 testes passando) ✅
-- Fase: 9 concluída (formulário de telemetria + refetch) → próxima: Fase 10 (alertas)
+- Fase: 16 — todas as telas concluídas (health, lista, detalhe, painel, telemetria, alertas)
 - Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web); para o Angular 22 reatividade por Signals (sem zone.js); URL base `http://localhost:3000` centralizada em `WindOpsApiService`
 
 ## Decisões
@@ -185,6 +185,28 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - `/health` repetido a cada reload; pode vir `304` (ETag/cache) — não é erro
 - Nenhuma request duplicada por navegação observada
 
+## Critérios de aceite (Desafio 04)
+
+```text
+[x] Backend validado          [x] loading          [x] CORS/proxy consciente
+[x] Angular executa           [x] error            [x] API service centralizado
+[x] health integrado          [x] empty quando aplicável   [x] tipagem sem any
+[x] assets reais              [x] responsivo       [x] teclado básico
+[x] detalhe por rota          [x] build backend    [x] build frontend
+[x] summary                   [x] testes escolhidos
+[x] telemetry                 [x] Network audit
+[x] POST telemetry            [x] README
+[x] alertas
+```
+
+## Fase 16 — Explicação final (aluno)
+
+Aluno explicou os 10 pontos (arquitetura, contrato, CORS, primeira request, lista,
+fluxo da telemetria, loading/error, atualização após mutation, teste, decisão dos KPIs).
+Feedback dado e correções aplicadas (404 ≠ vazio; sem banco/Prisma; `/dashboard/overview`;
+refetch ao recriar o componente). Pontos a reforçar: regra de temperatura (75/85) e
+"vazio = 200 com []".
+
 ## Bugs conhecidos
 
 - Nenhum. Dados em memória: reiniciar o servidor zera telemetria/alertas (esperado no Desafio 3).
@@ -196,8 +218,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 16 — explicação final do aluno (arquitetura, contrato, CORS, primeira request, lista, telemetria, loading/error, atualização após mutation, teste e decisão dos KPIs).
+Núcleo concluído. Bônus opcionais (cada um justificando o problema que resolve): gráficos, filtros, polling/refresh automático, Prisma/PostgreSQL, autenticação, WebSocket/SSE.
 
 ## Último checkpoint
 
-Fases 10–15 concluídas: alertas no browser, revisão de estado, erros, acessibilidade, testes (18 back / 15 front) e auditoria Network. Pendente: commit do fechamento e explicação final (Fase 16).
+**Desafio 04 concluído (fases 0–16).** Backend validado, frontend integrado, critérios de aceite atendidos, 18 testes backend + 15 frontend, auditoria Network registrada e explicação final do aluno feita.

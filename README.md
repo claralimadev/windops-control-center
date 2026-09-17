@@ -36,6 +36,38 @@ Angular
 → simulação de squad
 ```
 
+## Execução do projeto
+
+### Backend (NestJS) — repo `windops-api/api`
+```bash
+cd ~/IdeaProjects/windops-api/api
+npm install
+npm run build
+npm run start:prod        # ou: node dist/main
+# API:     http://localhost:3000
+# Swagger: http://localhost:3000/docs
+# testes:  npm test
+```
+
+### Frontend (Angular 22) — pasta `web/`
+```bash
+cd web
+npm install               # .npmrc já define legacy-peer-deps=true
+npm start                 # http://localhost:4200
+npm run build
+npm test
+```
+
+### Integração
+- Suba o **backend antes** do web.
+- Base URL `http://localhost:3000` centralizada em `web/src/app/api/windops-api.service.ts`.
+- CORS escopado para `http://localhost:4200` em `windops-api/api/src/main.ts`.
+
+### Endpoints consumidos
+`GET /health`, `GET /assets`, `GET /assets/:id`, `GET /assets/:id/telemetry`,
+`GET /assets/:id/summary`, `POST /assets/:id/telemetry`, `GET /alerts`,
+`GET /dashboard/overview`.
+
 ## Regra central
 
 ```text
