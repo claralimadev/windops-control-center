@@ -156,6 +156,35 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - summary 404: GET /assets/XYZ/summary → 404 ✅
 - Swagger: GET /docs → 200 ✅
 
+## Fechamento (fases 11–16)
+
+### Fase 11 — Estado e reatividade (revisão, sem refactor)
+- KPIs derivados no backend (`/dashboard/overview`); front não guarda contador duplicado ✅
+- `submit loading` local (`submitState` no `AssetDetail`), não global ✅
+- `Assets` (lista) e `AssetDetail` (rota) têm donos separados; sem store global ✅
+
+### Fase 12 — Erros fullstack
+- 404 (ativo inexistente) → "Ativo não encontrado" ✅
+- 400 (payload inválido) → "Dados inválidos" ✅
+- indisponibilidade → mensagens de erro com retry (home/lista/alertas); erro ≠ vazio ✅
+- front bloqueia payload inválido (`min(0)`) antes de sair request ✅
+
+### Fase 13 — Responsividade e acessibilidade
+- headings, `label for`, links vs buttons, foco visível, `role=alert/status`, `aria-live` ✅
+- severidade com texto além de cor ✅
+- tabela de telemetria com `overflow-x` em telas estreitas ✅
+
+### Fase 14 — Testes
+- Backend: 18 testes (regra de temperatura, summary, assets, dashboard overview) ✅
+- Frontend: 15 testes (health, assets, detalhe+404, POST 201/400, dashboard, alertas) ✅
+
+### Fase 15 — Auditoria Network (observações)
+- Home: 1 request de dados (`GET /dashboard/overview`) além de `GET /health`; sem N+1 ✅
+- Detalhe: `/assets/:id` e, em paralelo, `/summary` + `/telemetry` (forkJoin) ✅
+- `POST /telemetry` → refetch de `/summary` + `/telemetry`: trade-off consciente (verdade do backend) em vez de update otimista
+- `/health` repetido a cada reload; pode vir `304` (ETag/cache) — não é erro
+- Nenhuma request duplicada por navegação observada
+
 ## Bugs conhecidos
 
 - Nenhum. Dados em memória: reiniciar o servidor zera telemetria/alertas (esperado no Desafio 3).
@@ -167,8 +196,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fechamento (fases 11–16): revisão de estado (11), erros fullstack (12), acessibilidade (13), testes (14), auditoria Network (15) e explicação final (16).
+Fase 16 — explicação final do aluno (arquitetura, contrato, CORS, primeira request, lista, telemetria, loading/error, atualização após mutation, teste e decisão dos KPIs).
 
 ## Último checkpoint
 
-Fase 10 concluída e validada no browser (lista de alertas com severidade textual, GET /alerts 200). 15 testes passando. Pendente: commit da Fase 10 e fechamento.
+Fases 10–15 concluídas: alertas no browser, revisão de estado, erros, acessibilidade, testes (18 back / 15 front) e auditoria Network. Pendente: commit do fechamento e explicação final (Fase 16).
