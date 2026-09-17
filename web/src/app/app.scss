@@ -19,6 +19,30 @@
   font-size: 1.15rem;
 }
 
+.main-nav {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.main-nav a {
+  color: #334155;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.35rem;
+}
+
+.main-nav a.active {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.main-nav a:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
 .health {
   display: inline-flex;
   align-items: center;

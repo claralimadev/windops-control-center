@@ -1,0 +1,50 @@
+<section class="assets">
+  <h2>Ativos</h2>
+
+  @if (state(); as s) {
+    @if (s.status === 'loading') {
+      <p class="state" role="status" aria-live="polite">Carregando ativos…</p>
+    }
+
+    @if (s.status === 'error') {
+      <div class="state error" role="alert">
+        <p>{{ s.message }}</p>
+        <button type="button" (click)="load()">Tentar novamente</button>
+      </div>
+    }
+
+    @if (s.status === 'success') {
+      @if (s.assets.length === 0) {
+        <p class="state empty">Nenhum ativo cadastrado ainda.</p>
+      } @else {
+        <ul class="asset-list">
+          @for (asset of s.assets; track asset.id) {
+            <li class="asset-card">
+              <header class="asset-card__head">
+                <span class="asset-id">{{ asset.id }}</span>
+                <span class="badge status-{{ asset.status }}">
+                  {{ statusLabel[asset.status] }}
+                </span>
+              </header>
+              <p class="asset-name">{{ asset.name }}</p>
+              <dl class="asset-meta">
+                <div>
+                  <dt>Tipo</dt>
+                  <dd>{{ typeLabel[asset.type] }}</dd>
+                </div>
+                <div>
+                  <dt>Local</dt>
+                  <dd>{{ asset.location }}</dd>
+                </div>
+                <div>
+                  <dt>Potência nominal</dt>
+                  <dd>{{ asset.ratedPowerMw }} MW</dd>
+                </div>
+              </dl>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</section>

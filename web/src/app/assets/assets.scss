@@ -1,0 +1,95 @@
+.assets {
+  padding: 1.25rem;
+}
+
+.assets h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.state {
+  padding: 0.75rem 0;
+}
+
+.state.error {
+  color: #b91c1c;
+}
+
+.asset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.asset-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #fff;
+}
+
+.asset-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.asset-id {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.asset-name {
+  margin: 0.5rem 0 0.75rem;
+  color: #52606d;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+  border: 1px solid currentColor;
+}
+
+.badge.status-ONLINE {
+  color: #15803d;
+}
+
+.badge.status-ATTENTION {
+  color: #b45309;
+}
+
+.badge.status-MAINTENANCE {
+  color: #1d4ed8;
+}
+
+.badge.status-OFFLINE {
+  color: #b91c1c;
+}
+
+.asset-meta {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.asset-meta > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.asset-meta dt {
+  color: #7b8794;
+  font-size: 0.85rem;
+}
+
+.asset-meta dd {
+  margin: 0;
+  font-size: 0.9rem;
+}

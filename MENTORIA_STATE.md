@@ -81,6 +81,14 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - Network: GET /health 200 (e 304 em reload com cache válido — esperado) ✅
 - Observado na prática: PID muda a cada start; identificado com `ss -tlnp` e encerrado com `kill`
 
+### Frontend (Fase 6 — lista de ativos)
+- rotas: `'' → redirect /assets`; `/assets → Assets` ✅
+- getAssets p/ `GET /assets` ✅
+- estados loading/success/empty/error no componente (empty derivado de success; erro separado) ✅
+- browser: 3 cartões (WT-001 Operando, WT-002 Manutenção, PV-001 Operando) com tipo/local/potência ✅
+- Network: GET /assets 200 ✅
+- testes: 6 passando (health 3 + assets 3) ✅
+
 ### Backend (Fase 0 — via curl em 16/09/2026)
 - health: GET /health → 200 `{"status":"ok"}` ✅
 - assets: GET /assets → 200, 3 ativos (WT-001, WT-002, PV-001) ✅
@@ -109,8 +117,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 5/6 — tipar Asset no frontend, `getAssets()` no WindOpsApiService, listar ativos com estados loading/success/empty/error e rotas mínimas.
+Fase 7 — detalhe do ativo (`/assets/:id`) com asset + summary + telemetria; decidir paralelo/sequencial e falha parcial. Fase 8 — decisão de agregação dos KPIs.
 
 ## Último checkpoint
 
-Fase 4 concluída e provada no browser: ciclo Online → Indisponível → Online sem esconder erro. Evidências registradas. Pendente: commit da fatia de health e decisão Fase 8 (agregação KPIs).
+Fase 6 concluída: lista de ativos real renderizada no browser, GET /assets 200, 6 testes passando. Sem bugs abertos.
