@@ -1,0 +1,71 @@
+.alerts {
+  padding: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.alerts h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.state.error {
+  color: #b91c1c;
+}
+
+.alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.alert-card {
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  background: #fff;
+}
+
+.alert-card.severity-WARNING {
+  border-left-color: #b45309;
+}
+
+.alert-card.severity-CRITICAL {
+  border-left-color: #b91c1c;
+}
+
+.alert-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.severity {
+  font-weight: 700;
+}
+
+.severity-WARNING .severity {
+  color: #b45309;
+}
+
+.severity-CRITICAL .severity {
+  color: #b91c1c;
+}
+
+.asset {
+  color: #52606d;
+}
+
+.alert-head time {
+  margin-left: auto;
+  color: #7b8794;
+}
+
+.message {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+}

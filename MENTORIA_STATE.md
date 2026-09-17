@@ -3,7 +3,7 @@
 ## Projeto
 
 - Nome: WindOps Control Center
-- Fase: 9 — formulário de telemetria + refetch (16/09/2026) → próxima: Fase 10 (alertas)
+- Fase: 10 — página de alertas concluída (16/09/2026) → próxima: fechamento (fases 11–16)
 - Nível do aluno: A — Iniciante em integração fullstack (fez Desafio 3 completo)
 - Estrutura repo: Opção B — backend `windops-api` fica onde está; workspace fullstack novo `windops-control-center` (ADR-001). Workspace novo contém o pacote de mentoria + futura pasta `web/`
 - Tutor: OpenCode / Antigravity
@@ -22,7 +22,7 @@
 - diretório: `web/` em `/home/usuario/IdeaProjects/windops-control-center`
 - porta: 4200 (padrão ng serve)
 - build: `ng build` ok ✅
-- testes: `ng test` (Vitest, 12 testes passando) ✅
+- testes: `ng test` (Vitest, 15 testes passando) ✅
 - Fase: 9 concluída (formulário de telemetria + refetch) → próxima: Fase 10 (alertas)
 - Notas: scaffold standalone (sem NgModules), Angular 22, SCSS, rotas via `app.routes.ts`, runner de teste `@angular/build:unit-test`; `.npmrc` com `legacy-peer-deps=true` (mesmo contorno do ADR-001 backend, agora aplicado no web); para o Angular 22 reatividade por Signals (sem zone.js); URL base `http://localhost:3000` centralizada em `WindOpsApiService`
 
@@ -127,6 +127,13 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 - validação de front barra `powerMw=-1` antes de sair request (min(0)) ✅
 - testes: 12 passando ✅
 
+### Frontend (Fase 10 — alertas)
+- `getAlerts()` p/ `GET /alerts`; componente `Alerts` em `/alerts` + link no nav e no painel ✅
+- severidade **textual** (Atenção/Crítico) além de cor; ativo, mensagem e horário ✅
+- estados loading/success/empty/error ✅
+- browser: lista com Atenção (WT-001) e Crítico (PV-001/WT-001); Network `GET /alerts → 200` ✅
+- testes: 15 passando ✅
+
 ### Backend (Fase 8 — endpoint agregado, 16/09/2026)
 - GET /dashboard/overview → 200 `{totalAssets:3, onlineAssets:2, attentionAssets:0, maintenanceAssets:1, criticalAlerts:0, totalAlerts:0}` (estado limpo) ✅
 - após POST WARNING (WT-001, 80) + POST CRITICAL (PV-001, 90): criticalAlerts 0→1, totalAlerts 0→2 ✅ (KPI calculado de verdade)
@@ -160,8 +167,8 @@ Obs. 2: divergência #1 é decisão deliberada do Desafio 3 (`{ telemetry, alert
 
 ## Próximo passo
 
-Fase 10 — página de alertas (`GET /alerts`): lista com severidade textual, ativo, mensagem, timestamp; coluna de alertas no dashboard.
+Fechamento (fases 11–16): revisão de estado (11), erros fullstack (12), acessibilidade (13), testes (14), auditoria Network (15) e explicação final (16).
 
 ## Último checkpoint
 
-Fase 9 concluída e validada no browser (POST 201 → alerta CRITICAL → refetch 200). 12 testes passando. Pendente: commit da Fase 9 e Fase 10.
+Fase 10 concluída e validada no browser (lista de alertas com severidade textual, GET /alerts 200). 15 testes passando. Pendente: commit da Fase 10 e fechamento.

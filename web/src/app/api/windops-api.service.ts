@@ -8,6 +8,7 @@ import type { AssetSummary } from './asset-summary';
 import type { DashboardOverview } from './dashboard-overview';
 import type { CreateTelemetryPayload } from './telemetry-create';
 import type { TelemetryCreated } from './telemetry-created';
+import type { Alert } from './alert';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -51,5 +52,9 @@ export class WindOpsApiService {
       `${API_BASE_URL}/assets/${encodeURIComponent(id)}/telemetry`,
       payload,
     );
+  }
+
+  getAlerts(): Observable<Alert[]> {
+    return this.http.get<Alert[]>(`${API_BASE_URL}/alerts`);
   }
 }
