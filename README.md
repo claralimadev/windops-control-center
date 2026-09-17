@@ -1,82 +1,91 @@
-# ⚡ WindOps Control Center — Fullstack Mentor Pack
+# ⚡ WindOps Control Center — Fullstack
 
-## Objetivo
+Painel integrado de operação e alertas para ativos de energia renovável (aerogeradores e painéis solares).
 
-Construir o primeiro projeto **Angular + NestJS integrado** da trilha usando OpenCode/Antigravity como tutor.
+**Stack:** Angular 22 (zoneless, signals) · TypeScript · NestJS backend REST · Swagger/OpenAPI · dados em memória.
 
-## Arquivos
+> Frontend consumindo uma API NestJS real — o desafio #4 da trilha (Angular + NestJS integrados),
+> desde o `GET /health` até o painel de KPIs agregados no backend.
 
-- `AGENTS.md`
-- `FULLSTACK_MENTOR_PROTOCOL.md`
-- `DESAFIO_04_WINDOPS_CONTROL_CENTER_FULLSTACK.md`
-- `API_CONTRACT.md`
-- `WIREFRAMES.md`
-- `MENTORIA_STATE.md`
-- `prompts/`
+---
 
-## Como usar
+## ✨ Funcionalidades
 
-1. Coloque este pacote na raiz do workspace.
-2. Coloque ou referencie o backend WindOps anterior.
-3. Abra o workspace no OpenCode/Antigravity.
-4. Cole `prompts/00_INICIAR_FULLSTACK.md`.
-5. O tutor deve auditar o backend antes de criar Angular.
-6. Escolha wireframe antes do layout.
-7. Integre uma feature por vez.
-8. Valide com Network.
+| Rota | O que faz |
+|---|---|
+| `/` | Painel com KPIs agregados (`/dashboard/overview`): ativos totais, online, em atenção, manutenção e alertas críticos |
+| `/assets` | Lista de ativos reais vindos da API (`GET /assets`), com estados loading/empty/error |
+| `/assets/:id` | Detalhe do ativo: resumo + telemetria carregados **em paralelo** |
+| `/assets/:id` | Formulário de telemetria (**Reactive Forms**) → `POST /assets/:id/telemetry`, com refetch automático |
+| `/alerts` | Página de alertas (`GET /alerts`) com severidade, ativo, mensagem e horário |
 
-## Progressão
+Tratamento de estado completo em toda tela: **loading · success · empty · error** (com "Tentar novamente"). **Erro ≠ vazio**:
+falha de rede mostra mensagem de falha; recurso inexistente mostra 404 próprio.
+
+## 🧱 Arquitetura
 
 ```text
-Angular
-→ Angular + API pública
-→ NestJS API
-→ Angular + NestJS
-→ agentes próprios
-→ simulação de squad
+Angular (porta 4200)                    NestJS (porta 3000)
+┌────────────────────┐                 ┌─────────────────────────┐
+│ componentes/signals│  HTTP (GET/POST)│  Controller → Service    │
+│ service central    │ ───────────────►│  DTO + ValidationPipe    │
+│ (windops-api)      │ ◄───────────────│  Regra (75/85 °C) → dado │
+└────────────────────┘      JSON        └─────────────────────────┘
 ```
 
-## Execução do projeto
+- **Um único ponto de rede**: `web/src/app/api/windops-api.service.ts` (`baseURL = http://localhost:3000`).
+- **Tipos de contrato** espelhando o JSON da API (sem `any`).
+- **CORS escopado** no backend para `http://localhost:4200`.
 
-### Backend (NestJS) — repo `windops-api/api`
+## 🔧 Como rodar
+
+Pré-requisitos: Node.js ≥ 22 e npm.
+
+### 1. Backend (NestJS)
+
 ```bash
-cd ~/IdeaProjects/windops-api/api
+cd <seu-repo>/windops-api      # ou outro clone do backend
 npm install
 npm run build
-npm run start:prod        # ou: node dist/main
-# API:     http://localhost:3000
-# Swagger: http://localhost:3000/docs
-# testes:  npm test
+npm run start:prod             # sobe em http://localhost:3000
 ```
 
-### Frontend (Angular 22) — pasta `web/`
+- Swagger: **http://localhost:3000/docs** · spec JSON em `/docs-json`
+- Testes: `npm test` (18 testes)
+
+### 2. Frontend (Angular) — este repositório
+
 ```bash
 cd web
-npm install               # .npmrc já define legacy-peer-deps=true
-npm start                 # http://localhost:4200
-npm run build
-npm test
+npm install                    # .npmrc já define legacy-peer-deps=true
+npm start                      # sobe em http://localhost:4200
 ```
 
-### Integração
-- Suba o **backend antes** do web.
-- Base URL `http://localhost:3000` centralizada em `web/src/app/api/windops-api.service.ts`.
-- CORS escopado para `http://localhost:4200` em `windops-api/api/src/main.ts`.
+- Build: `npm run build`
+- Testes: `npm test` (15 testes — Vitest via `@angular/build:unit-test`)
 
-### Endpoints consumidos
-`GET /health`, `GET /assets`, `GET /assets/:id`, `GET /assets/:id/telemetry`,
-`GET /assets/:id/summary`, `POST /assets/:id/telemetry`, `GET /alerts`,
-`GET /dashboard/overview`.
+> Suba o **backend antes do frontend**. Com o backend desligado, a UI mostra estados de erro
+> com "Tentar novamente" (testado no navegador).
 
-## Regra central
+## 🧪 Testes
+
+- **Backend (18):** regra de temperatura NORMAL/WARNING/CRITICAL, ativo inexistente, summary, alertas, KPIs agregados.
+- **Frontend (15):** pares sucesso/falha (ex.: mostra "Online"… / mostra "Indisponível"…), loading, empty, 404, erro de rede, validação do formulário.
+
+## 📂 Estrutura
 
 ```text
-contrato
-→ endpoint validado
-→ tipo frontend
-→ service
-→ estado
-→ UI
-→ Network
-→ edge case
+web/src/app/
+├── api/               # service central + tipos de contrato (health, asset, telemetry, ...)
+├── assets/            # lista /assets (cards são links)
+├── asset-detail/      # detalhe + formulário de telemetria (paralelo summary+telemetry)
+├── dashboard/         # painel de KPIs (GET /dashboard/overview)
+├── alerts/            # página /alerts
+└── app.{ts,html}      # shell + navegação (Painel / Ativos / Alertas)
 ```
+
+## 📦 Pacote de mentoria
+
+Este repositório também contém o "mentor pack" da trilha: `AGENTS.md`,
+`FULLSTACK_MENTOR_PROTOCOL.md`, `DESAFIO_04_WINDOPS_CONTROL_CENTER_FULLSTACK.md`,
+`API_CONTRACT.md`, `WIREFRAMES.md`, `MENTORIA_STATE.md` (histórico de decisões, ADRs e evidências) e `prompts/`.
